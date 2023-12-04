@@ -2,3 +2,11 @@
 docker build -t your-image-name .
 # run container
 docker run -p 5000:5000 your-image-name
+
+
+## Routes
+
+GET / # Empty page
+GET /csrf # get csrf token
+POST /login # login
+GET /protected # protected page
