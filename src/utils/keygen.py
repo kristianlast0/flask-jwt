@@ -12,16 +12,7 @@
 # Using secrets to generate a key
 import secrets # python 3.6+
 def generate_key(length: int = 32) -> str:
-    # Write the secret key to the .env file
-    secret_key = secrets.token_hex(length)
-    try:
-        with open('.env', 'w') as env_file:
-            env_file.write(f"SECRET_KEY={secret_key}\n")
-            print("Generated and wrote Secret Key to .env file.")
-    except Exception as e:
-        print("Error writing to .env file.")
-        print(e)
-    return secret_key
+    return secrets.token_hex(length)
 
 # Using os.urandom to generate a key
 import os
