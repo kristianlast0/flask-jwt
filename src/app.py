@@ -23,7 +23,10 @@ db.init_app(app)
 # Create tables and seed a test user if not already present
 with app.app_context():
     # if db not exists, create it
-    if not os.path.exists('src/' + os.getenv('SQLALCHEMY_DATABASE_URI').split('/')[-1].split('?')[0]):
+    db_name = os.getenv('SQLALCHEMY_DATABASE_URI').split('/')[-1]
+    path = os.path.join(os.getcwd(), 'instance', db_name)
+    # Check if the database exists
+    if not os.path.exists(path):
         # Create the database
         db.create_all()
         # Check if the test user already exists

@@ -6,7 +6,7 @@ from models import User
 def token_required(fn):
     @wraps(fn)
     def decorated(*args, **kwargs):
-        token = None
+        jwt_token = None
         # jwt is passed in the request header
         authorization_header = request.headers.get('Authorization')
         if not authorization_header or not authorization_header.startswith('Bearer '): return jsonify({ 'error': 'Invalid token format' }), 401
