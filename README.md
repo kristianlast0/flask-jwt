@@ -26,24 +26,24 @@ Run the conainter:
 docker run -p 5000:5000 flask-auth-app
 ```
 
-## Routes
+# Routes
 
-# Empty Page
+## Empty Page
 GET /
 
 An empty page.
 
-# Get CSRF Token
+## Get CSRF Token
 GET /csrf
 
 Endpoint to get a CSRF token.
 
-# Login
+## Login
 POST /login
 
 Endpoint for user login.
 
-# Protected Page
+## Protected Page
 GET /protected
 
 A protected page that requires authentication.
