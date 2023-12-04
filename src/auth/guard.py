@@ -8,27 +8,27 @@ def token_required(fn):
     def decorated(*args, **kwargs):
         token = None
         # jwt is passed in the request header
-        if 'Authorization' in request.headers:
-            # split the token to get the actual token
-            token = request.headers['Authorization']
-            bearer = token.split()[0]
-            token = token.split()[1]
+        authorization_header = request.headers.get('Authorization')
+        if not authorization_header or not authorization_header.startswith('Bearer '): return jsonify({ 'error': 'Invalid token format' }), 401
+        jwt_token = authorization_header.split()[1]
         # return 401 if token is not passed
-        if not token: return jsonify({ 'message': 'Token is missing' }), 401
+        if not jwt_token: return jsonify({ 'error': 'Token is missing' }), 401
         try:
             # decoding the payload to fetch the stored details
-            data = jwt.decode(token, os.getenv('SECRET_KEY'), algorithms=["HS256"])
+            data = jwt.decode(jwt_token, os.getenv('SECRET_KEY'), algorithms=["HS256"])
             # fetch the user to whom the token belongs
             current_user = User.query.filter_by(username=data['user']).first()
+            # if user not found
+            if not current_user: return jsonify({ 'error': 'User not found' }), 401
             # returns the current logged in users contex to the routes
             return fn(current_user, *args, **kwargs)
         # throws exception if token is expired
         except jwt.ExpiredSignatureError:
-            return jsonify({ 'message': 'Token has expired' }), 401
+            return jsonify({ 'error': 'Token has expired' }), 401
         # throws exception if token does not match
         except jwt.InvalidTokenError:
-            return jsonify({ 'message': 'Invalid token' }), 401
-        # return 401 if token is not passed
+            return jsonify({ 'error': 'Invalid token' }), 401
+        # return 401 if token is not valid
         except Exception as e:
-            return jsonify({ 'message': 'Token is invalid' }), 401
+            return jsonify({ 'error': 'Token is invalid' }), 401
     return decorated
