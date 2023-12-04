@@ -1,10 +1,8 @@
 import os
-from flask import Flask, request, jsonify, make_response, render_template, session, abort
-from flask_sqlalchemy import SQLAlchemy
+from flask import Flask, request, jsonify, render_template, abort
 from flask_bcrypt import Bcrypt
 import jwt
 from datetime import datetime, timedelta
-from functools import wraps
 import dotenv 
 from auth.guard import token_required
 from auth.forms import CredentialsForm
@@ -22,7 +20,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = os.getenv('DEBUG')
 bcrypt = Bcrypt(app)
 db.init_app(app)
 
-# Create tables and seed a test user
+# Create tables and seed a test user if not already present
 with app.app_context():
     db.create_all()
     # Check if the test user already exists
@@ -64,7 +62,7 @@ def login():
         'exp': datetime.utcnow() + timedelta(minutes=30),
         'iat': datetime.utcnow()
     }
-    token = jwt.encode(payload, app.config['SECRET_KEY'])
+    token = jwt.encode(payload, app.config['SECRET_KEY'], algorithm="HS256")
     return jsonify({ 'token': token })
 
 @app.route('/logout')

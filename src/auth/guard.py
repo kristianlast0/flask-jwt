@@ -11,12 +11,13 @@ def token_required(fn):
         if 'Authorization' in request.headers:
             # split the token to get the actual token
             token = request.headers['Authorization']
+            bearer = token.split()[0]
             token = token.split()[1]
         # return 401 if token is not passed
         if not token: return jsonify({ 'message': 'Token is missing' }), 401
         try:
             # decoding the payload to fetch the stored details
-            data = jwt.decode(token, os.getenv('SECRET_KEY'))
+            data = jwt.decode(token, os.getenv('SECRET_KEY'), algorithms=["HS256"])
             # fetch the user to whom the token belongs
             current_user = User.query.filter_by(username=data['user']).first()
             # returns the current logged in users contex to the routes
