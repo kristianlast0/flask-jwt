@@ -11,6 +11,12 @@ To run this project locally, make sure you have Docker installed on your machine
 ### Prerequisites
 
 - Docker installed on your machine
+- Copy .env.example to .env and update
+
+```bash
+cd src
+cp .env.example .env
+```
 
 ### Build and Run
 
