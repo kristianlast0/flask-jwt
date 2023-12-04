@@ -22,15 +22,18 @@ db.init_app(app)
 
 # Create tables and seed a test user if not already present
 with app.app_context():
-    db.create_all()
-    # Check if the test user already exists
-    test_user = User.query.filter_by(username='testuser').first()
-    if not test_user:
-        # If the test user doesn't exist, create it
-        hashed_password = bcrypt.generate_password_hash('testpassword').decode('utf-8')
-        new_test_user = User(username='testuser', password=hashed_password)
-        db.session.add(new_test_user)
-        db.session.commit()
+    # if db not exists, create it
+    if not os.path.exists('src/' + os.getenv('SQLALCHEMY_DATABASE_URI').split('/')[-1].split('?')[0]):
+        # Create the database
+        db.create_all()
+        # Check if the test user already exists
+        test_user = User.query.filter_by(username='testuser').first()
+        if not test_user:
+            # If the test user doesn't exist, create it
+            hashed_password = bcrypt.generate_password_hash('testpassword').decode('utf-8')
+            new_test_user = User(username='testuser', password=hashed_password)
+            db.session.add(new_test_user)
+            db.session.commit()
 
 # Route to get CSRF token
 @app.route('/csrf', methods=['GET'])
