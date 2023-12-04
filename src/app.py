@@ -73,6 +73,7 @@ def logout():
 @app.route('/protected')
 @token_required
 def protected(current_user):
+    # pass the token in header: "Authorization: Bearer <token>"
     return jsonify({ 'message': f'Hello {current_user.username}!' })
 
 if __name__ == '__main__':
