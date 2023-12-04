@@ -44,12 +44,10 @@ def index():
 
 @app.route('/login', methods=['POST'])
 def login():
+    # form request should contain username, password and csrf_token
     form = CredentialsForm(request.form)
     # return 401 if username or password is not provided or fails validation
-    if not form.validate_on_submit():
-        print("Form validation failed")
-        print(form.errors)
-        abort(403, 'Authentication failed.')
+    if not form.validate_on_submit(): abort(403, 'Authentication failed.')
     # looking for the user in the database
     user = User.query.filter_by(username=form.username.data).first()
     # return 401 if user not found in the database
@@ -58,16 +56,14 @@ def login():
     if not bcrypt.check_password_hash(user.password, form.password.data): abort(403, 'Authentication failed.')
     # generate token if user found
     payload = {
-        'user': request.form['username'],
+        'user': user.username,
         'exp': datetime.utcnow() + timedelta(minutes=30),
         'iat': datetime.utcnow()
     }
+    # encode the token
     token = jwt.encode(payload, app.config['SECRET_KEY'], algorithm="HS256")
+    # return token
     return jsonify({ 'token': token })
-
-@app.route('/logout')
-def logout():
-    return jsonify({ 'message': 'Successfully logged out' })
 
 # Protecting the route with jwt
 @app.route('/protected')
